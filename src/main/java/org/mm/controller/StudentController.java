@@ -1,6 +1,9 @@
 package org.mm.controller;
 
+import org.mm.dao.StudentRepository;
 import org.mm.dto.StudentDTO;
+import org.mm.entities.StudentEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -16,23 +19,25 @@ public class StudentController
 //        return "This is my message";
 //    }
 
+    @Autowired
+    private StudentRepository studentRepository;
+
     @GetMapping(path = "/student/{id}")
-    public StudentDTO getStudentById(@PathVariable("id") Long id)
+    public StudentEntity getStudentById(@PathVariable("id") Long id)
     {
-        return new StudentDTO(id, "Man Patel", "man@gmail.com",19, LocalDate.of(2024,1,2),true);
+        return studentRepository.findById(id).orElse(null);
     }
 
     @GetMapping
-    public String getAllStudent(@RequestParam(required = false) Integer age)
+    public List<StudentEntity> getAllStudent(@RequestParam(required = false) Integer age)
     {
-        return "Hi age "+age;
+        return studentRepository.findAll();
     }
 
     @PostMapping
-    public StudentDTO createStudent(@RequestBody StudentDTO studentDTO)
+    public StudentEntity createStudent(@RequestBody StudentEntity student)
     {
-        studentDTO.setId(101L);
-        return studentDTO;
+        return studentRepository.save(student);
     }
 
     @PutMapping
