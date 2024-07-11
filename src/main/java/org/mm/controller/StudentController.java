@@ -3,6 +3,7 @@ package org.mm.controller;
 import org.mm.dao.StudentRepository;
 import org.mm.dto.StudentDTO;
 import org.mm.entities.StudentEntity;
+import org.mm.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,25 +20,28 @@ public class StudentController
 //        return "This is my message";
 //    }
 
-    @Autowired
-    private StudentRepository studentRepository;
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
 
     @GetMapping(path = "/student/{id}")
-    public StudentEntity getStudentById(@PathVariable("id") Long id)
+    public StudentDTO getStudentById(@PathVariable("id") Long id)
     {
-        return studentRepository.findById(id).orElse(null);
+        return studentService.getStudentById(id);
     }
 
     @GetMapping
-    public List<StudentEntity> getAllStudent(@RequestParam(required = false) Integer age)
+    public List<StudentDTO> getAllStudent(@RequestParam(required = false) Integer age)
     {
-        return studentRepository.findAll();
+        return studentService.getAllStudent();
     }
 
     @PostMapping
-    public StudentEntity createStudent(@RequestBody StudentEntity student)
+    public StudentDTO createStudent(@RequestBody StudentDTO studentDTO)
     {
-        return studentRepository.save(student);
+        return studentService.createStudent(studentDTO);
     }
 
     @PutMapping
