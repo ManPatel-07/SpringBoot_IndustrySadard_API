@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.mm.dao.StudentRepository;
 import org.mm.dto.StudentDTO;
 import org.mm.entities.StudentEntity;
+import org.mm.exceptions.ResourceNotFoundException;
 import org.mm.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -36,8 +38,9 @@ public class StudentController
     {
         Optional<StudentDTO> studentDTO = studentService.getStudentById(id);
         return studentDTO.map(studentDTO1 -> ResponseEntity.ok(studentDTO1))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(()-> new ResourceNotFoundException("Student Not found"));
     }
+
 
     @GetMapping
     public ResponseEntity<List<StudentDTO>> getAllStudent(@RequestParam(required = false) Integer age)
@@ -53,7 +56,7 @@ public class StudentController
     }
 
     @PutMapping(path = "/student/{id}")
-    public ResponseEntity<StudentDTO> updateStudent(@PathVariable("id") Long studentid,@RequestBody StudentDTO studentDTO)
+    public ResponseEntity<StudentDTO> updateStudent(@PathVariable("id") @Valid Long studentid,@RequestBody StudentDTO studentDTO)
     {
         return ResponseEntity.ok(studentService.updateStudentById(studentid, studentDTO));
     }
